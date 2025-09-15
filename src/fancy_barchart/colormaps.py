@@ -12,6 +12,7 @@ except ImportError as ie:
     warn(f"Could not import module '{ie.name}' to interpolate in CIELAB space, use RGB space instead.", UserWarning)
     rgb2lab = lab2rgb = lambda img: img
 
+from fancy_barchart.util import alternate
 
 Color = tuple[float, float, float] # RGB
 
@@ -35,7 +36,7 @@ def gradient(rgb1: Color, rgb2: Color, steps: int) -> NDArray[float]:
 
 def hatch(rgb1: Color, rgb2: Color, steps: int) -> NDArray[float]:
     """Alternate ``rgb1`` and ``rgb2`` as often as necessary, return the corresponding ``steps×3`` array."""
-    return np.array(([rgb1, rgb2] * ((steps + 1) // 2))[:steps])
+    return np.array(alternate(rgb1, rgb2, num=steps))
 
 
 class Style(Enum):
