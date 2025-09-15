@@ -1,4 +1,5 @@
-from typing import Literal, NamedTuple
+from enum import Enum
+from typing import NamedTuple
 from warnings import warn
 
 import matplotlib.pyplot as plt
@@ -12,6 +13,9 @@ except ImportError as ie:
     rgb2lab = lab2rgb = lambda img: img
 
 
+Color = tuple[float, float, float] # RGB
+
+
 class Target(NamedTuple):
     """Determine to what extent and with which (global) target color each color from the colormap is paired."""
     color: str | NDArray[float] = "white"
@@ -20,17 +24,7 @@ class Target(NamedTuple):
     """opacity of the target value: the actual target is produced as ``(1 - opacity) * src + opacity * target``)"""
 
 
-class CM(NamedTuple):
-    """Determine the colormap and resampling strategy to be used."""
-    map: str | ListedColormap = "tab20"
-    """matplotlib colormap or its name to be used (should be a ``ListedColormap``, usually a qualitative one)"""
-    mode: Literal["interpolate", "alternate"] = "interpolate"
-    """either "interpolate" (linearly interpolate each color pair) or "alternate" (alternate each pair's colors)"""
-    unpaired: Target | None = None
-    """assume successive colors as paired if None, else create a paired value for each color by the given parameters"""
-
-
-def interpolate(rgb1: NDArray[float], rgb2: NDArray[float], steps: int) -> NDArray[float]:
+def gradient(rgb1: Color, rgb2: Color, steps: int) -> NDArray[float]:
     """
     Linearly interpolate from ``rgb1`` to ``rgb2`` over the given number of ``steps`` in CIELAB color space, return the
     corresponding ``steps×3`` RGB array (assert and return values in range 0.,…,1.).
@@ -39,12 +33,28 @@ def interpolate(rgb1: NDArray[float], rgb2: NDArray[float], steps: int) -> NDArr
     return np.clip(lab2rgb(np.linspace(lab(rgb1), lab(rgb2), steps)), 0, 1)
 
 
-def alternate(rgb1: NDArray[float], rgb2: NDArray[float], steps: int) -> NDArray[float]:
+def alternate(rgb1: Color, rgb2: Color, steps: int) -> NDArray[float]:
     """Alternate ``rgb1`` and ``rgb2`` as often as necessary, return the corresponding ``steps×3`` array."""
     return np.array(([rgb1, rgb2] * ((steps + 1) // 2))[:steps])
 
 
-def unpaired_target(rgb1: NDArray[float], rgb2: NDArray[float], opacity: float) -> NDArray[float]:
+class PairInterpolation(Enum):
+    """Determine interpolation strategy."""
+    GRADIENT = gradient
+    """linearly interpolate between the colors of each color pair"""
+    ALTERNATE = alternate
+    """alternate each pair's colors"""
+
+
+class ColorPairs(NamedTuple):
+    """Determine available color pairs."""
+    map: str | ListedColormap = "tab20"
+    """matplotlib colormap or its name to be used (should be a ``ListedColormap``, usually a qualitative one)"""
+    unpaired: Target | None = None
+    """assume successive colors as paired if None, else create a paired value for each color by the given parameters"""
+
+
+def unpaired_target(rgb1: Color | NDArray[float], rgb2: Color | NDArray[float], opacity: float) -> NDArray[float]:
     """
     From the given source color(s) ``rgb1`` (N×3 or 3-tuple), linearly interpolate to the given target color(s) ``rgb2``
     (N×3 or 3-tuple) in CIELAB color space, by ``(1 - opacity) * rgb1 + opacity * rgb2``; return the corresponding
@@ -70,28 +80,28 @@ def paired(colors: NDArray[float], target: Target) -> NDArray[float]:
     return result
 
 
-def resampled(steps: list[int] | dict[int, int], cm: CM = CM()) -> ListedColormap:
+def resampled(steps: list[int] | dict[int, int], color_pairs: ColorPairs = ColorPairs(),
+              interpolation: PairInterpolation = PairInterpolation.GRADIENT) -> ListedColormap:
     """
     Resample a colormap, so that each color (or color pair) is extended to its corresponding number of ``steps``.
 
-    :param steps: value at index ``i`` (list) or key ``i`` (dict) indicates that the ``i``-th color (or color pair)
+    :param steps: value at index ``i`` (list) or key ``i`` (dict) indicates that the ``i``-th color pair
         should be extended to the corresponding number of ``steps``
-    :param cm: colormap properties
+    :param color_pairs: color pairs to be used
+    :param interpolation: interpolation strategy to be used
     :return: resampled colormap
     """
-    if cm.mode not in (modes := {"interpolate", "alternate"}):
-        raise ValueError(f"Unknown {cm.mode=} (need {', '.join(sorted(modes))}).")
-    compose = interpolate if cm.mode == "interpolate" else alternate
-    cmap = plt.get_cmap(cm.map) if isinstance(cm.map, str) else cm.map
+    interpolation_function = interpolation.value
+    cmap = plt.get_cmap(color_pairs.map) if isinstance(color_pairs.map, str) else color_pairs.map
     if not isinstance(cmap, ListedColormap):
-        raise ValueError(f"Expected 'cm.map' as ListedColormap, got {cmap.__class__} instead.")
+        raise ValueError(f"Expected 'cm.map' as ListedColormap, got {cmap.__class__.__name__} instead.")
     colors = cmap.colors
-    if cm.unpaired is not None:  # Pair colors if necessary (assume them as already paired and interleaved otherwise)
-        colors = paired(colors, target=cm.unpaired)
+    if color_pairs.unpaired is not None:  # Pair colors if necessary (assume them as already paired otherwise)
+        colors = paired(colors, target=color_pairs.unpaired)
     if (num_given := len(colors) // 2) < (num_needed := (max(steps) + 1 if isinstance(steps, dict) else len(steps))):
         raise ValueError(f"Need {num_needed}, but given colormap provides only {num_given} colors (or color pairs).")
     if isinstance(steps, dict):  # Extract colors at given indices if necessary
         colors = [colors[ci] for si in steps.keys() for ci in (2 * si, 2 * si + 1)]
         steps = steps.values()
-    chunks = [compose(c1, c2, s) for c1, c2, s in zip(colors[::2], colors[1::2], steps) if s != 0]
+    chunks = [interpolation_function(c1, c2, s) for c1, c2, s in zip(colors[::2], colors[1::2], steps) if s != 0]
     return ListedColormap(np.vstack(chunks))    
