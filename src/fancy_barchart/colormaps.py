@@ -33,7 +33,7 @@ def gradient(rgb1: Color, rgb2: Color, steps: int) -> NDArray[float]:
     return np.clip(lab2rgb(np.linspace(lab(rgb1), lab(rgb2), steps)), 0, 1)
 
 
-def alternate(rgb1: Color, rgb2: Color, steps: int) -> NDArray[float]:
+def hatch(rgb1: Color, rgb2: Color, steps: int) -> NDArray[float]:
     """Alternate ``rgb1`` and ``rgb2`` as often as necessary, return the corresponding ``steps×3`` array."""
     return np.array(([rgb1, rgb2] * ((steps + 1) // 2))[:steps])
 
@@ -42,7 +42,7 @@ class Style(Enum):
     """Determine style (i.e. interpolation strategy for color pairs)."""
     GRADIENT = gradient
     """linearly interpolate between the colors of each color pair"""
-    ALTERNATE = alternate
+    HATCH = hatch
     """alternate each pair's colors"""
 
 
