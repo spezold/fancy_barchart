@@ -38,8 +38,8 @@ def alternate(rgb1: Color, rgb2: Color, steps: int) -> NDArray[float]:
     return np.array(([rgb1, rgb2] * ((steps + 1) // 2))[:steps])
 
 
-class PairInterpolation(Enum):
-    """Determine interpolation strategy."""
+class Style(Enum):
+    """Determine style (i.e. interpolation strategy for color pairs)."""
     GRADIENT = gradient
     """linearly interpolate between the colors of each color pair"""
     ALTERNATE = alternate
@@ -81,17 +81,17 @@ def paired(colors: NDArray[float], target: Target) -> NDArray[float]:
 
 
 def resampled(steps: list[int] | dict[int, int], color_pairs: ColorPairs = ColorPairs(),
-              interpolation: PairInterpolation = PairInterpolation.GRADIENT) -> ListedColormap:
+              style: Style = Style.GRADIENT) -> ListedColormap:
     """
-    Resample a colormap, so that each color (or color pair) is extended to its corresponding number of ``steps``.
+    Resample a colormap, so that each color pair is extended to its corresponding number of ``steps``.
 
-    :param steps: value at index ``i`` (list) or key ``i`` (dict) indicates that the ``i``-th color pair
-        should be extended to the corresponding number of ``steps``
+    :param steps: value at index ``i`` (list) or key ``i`` (dict) indicates that the ``i``-th color pair should be
+        extended to the corresponding number of ``steps``
     :param color_pairs: color pairs to be used
-    :param interpolation: interpolation strategy to be used
+    :param style: style (i.e. interpolation strategy for color pairs) to be used
     :return: resampled colormap
     """
-    interpolation_function = interpolation.value
+    interpolation_function = style.value
     cmap = plt.get_cmap(color_pairs.map) if isinstance(color_pairs.map, str) else color_pairs.map
     if not isinstance(cmap, ListedColormap):
         raise ValueError(f"Expected 'cm.map' as ListedColormap, got {cmap.__class__.__name__} instead.")
