@@ -3,6 +3,7 @@ from collections.abc import Mapping, Sequence
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 from matplotlib.colors import ListedColormap
+import numpy as np
 
 from fancy_barchart.colormaps import resampled, ColorPairs, Style, Target
 from fancy_barchart.util import alternate
@@ -79,9 +80,7 @@ def chart(c: Chart, *, color_pairs: ColorPairs = ColorPairs(), pair_idxs: Sequen
     pair_idx_by_category = dict(zip(all_categories, pair_idxs))
     style_by_bar = dict(zip(all_bars, styles))
     all_colormaps = _colormap_by_bar_from(c, color_pairs, pair_idx_by_category, style_by_bar)
-    # TODO: Continue here (1) create all colormaps (see above), (2) create groups (see
-    #   https://matplotlib.org/stable/gallery/lines_bars_and_markers/barchart.html), (3) create grouped legends (see
-    #   https://stackoverflow.com/questions/21570007/)
+    # TODO: (3) create grouped legends (see https://stackoverflow.com/questions/21570007/)
     ax = plt.gca()
     ax.invert_yaxis()
     bar_width = .8 / len(all_bars)  # Use default width and distribute among bars in group
@@ -96,7 +95,7 @@ def chart(c: Chart, *, color_pairs: ColorPairs = ColorPairs(), pair_idxs: Sequen
                         start += value
                         color_i += 1
     if group_names:
-        ax.set_yticks(range(len(c)), c.keys())  # TODO: Fix actual tick positions
+        ax.set_yticks(np.arange(len(c)) + (len(all_bars) - 1) / 2 * bar_width, c.keys())
     else:
         ax.set_yticks([])
     # TODO: Reintegrate legend
