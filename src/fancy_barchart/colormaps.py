@@ -93,7 +93,7 @@ def resampled(steps: list[int] | dict[int, int], color_pairs: ColorPairs = Color
     :param style: style (i.e. interpolation strategy for color pairs) to be used
     :return: resampled colormap
     """
-    interpolation_function = style.value
+    interpolation_function = style
     cmap = plt.get_cmap(color_pairs.map) if isinstance(color_pairs.map, str) else color_pairs.map
     if not isinstance(cmap, ListedColormap):
         raise ValueError(f"Expected 'cm.map' as ListedColormap, got {cmap.__class__.__name__} instead.")
