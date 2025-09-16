@@ -68,7 +68,6 @@ def chart(c: Chart, *, color_pairs: ColorPairs = ColorPairs(), pair_idxs: Sequen
     :param bar_names: show each bar's label/name (True; default) or not (False)
     :param legend: show a legend of the colors and styles (True; default) or not (False)
     """
-    all_groups = _all_groups_from(c)
     all_bars = _all_bars_from(c)
     all_categories = _all_categories_from(c)
     pair_idxs = range(len(all_categories)) if pair_idxs is None else pair_idxs
@@ -87,14 +86,15 @@ def chart(c: Chart, *, color_pairs: ColorPairs = ColorPairs(), pair_idxs: Sequen
     ax.invert_yaxis()
     bar_width = .8 / len(all_bars)  # Use default width and distribute among bars in group
     for g, (group_name, group) in enumerate(c.items()):
-        for b, (bar_name, bar) in enumerate(group.items()):
-            bar_colors = all_colormaps[group_name][bar_name].colors
-            start, color_idx = 0, 0
-            for category in all_categories:
-                for value in bar.get(category, []):
-                    ax.barh(g + bar_width * b, value, bar_width, color=bar_colors[color_idx], left=start, label=bar_name)
-                    start += value
-                    color_idx += 1
+        for b, bar_name in enumerate(all_bars):
+            if bar := group.get(bar_name):
+                bar_colors = all_colormaps[group_name][bar_name].colors
+                start, color_idx = 0, 0
+                for category in all_categories:
+                    for value in bar.get(category, []):
+                        ax.barh(g + bar_width * b, value, bar_width, color=bar_colors[color_idx], left=start, label=bar_name)
+                        start += value
+                        color_idx += 1
     if group_names:
         ax.set_yticks(range(len(c)), c.keys())  # TODO: Fix actual tick positions
     else:
