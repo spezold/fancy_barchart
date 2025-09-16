@@ -59,7 +59,7 @@ def chart(c: Chart, *, color_pairs: ColorPairs = ColorPairs(), pair_idxs: Sequen
     each category of the same name uses the same color pair, (6) values within each category are colored with different
     shades of the category's color pair.
 
-    :param c: ``{group name: {bar name: {category name: [values in category]}}}``
+    :param c: dictionary describing the chart: ``{group name: {bar name: {category name: [values in category]}}}``
     :param color_pairs: available color pairs
     :param pair_idxs: indices of the color pairs used from ``color_pairs`` for coloring categories
         (default: None; i.e. use all color pairs, starting from index 0)
@@ -77,21 +77,27 @@ def chart(c: Chart, *, color_pairs: ColorPairs = ColorPairs(), pair_idxs: Sequen
     styles = alternate(Style.HATCH, Style.GRADIENT, num=len(all_bars)) if styles is None else styles
     if len(styles) < len(all_bars):
         raise ValueError(f"Got only {len(styles)} styles for {len(all_bars)} bars.")
+    pair_idx_by_category = dict(zip(all_categories, pair_idxs))
+    style_by_bar = dict(zip(all_bars, styles))
+    all_colormaps = _colormap_by_bar_from(c, color_pairs, pair_idx_by_category, style_by_bar)
     # TODO: Continue here (1) create all colormaps (see above), (2) create groups (see
     #   https://matplotlib.org/stable/gallery/lines_bars_and_markers/barchart.html), (3) create grouped legends (see
     #   https://stackoverflow.com/questions/21570007/)
-    all_colormaps = _colormap_by_bar_from(bars, all_categories, colors, cm)
     ax = plt.gca()
     ax.invert_yaxis()
-    for (bar_name, bar_value), colormap in zip(bars.items(), all_colormaps):
-        start, color_idx = 0, 0
-        bar_colors = all_colormaps[bar_name].colors
-        for category in all_categories:
-            for value in bar_value.get(category, []):
-                ax.barh(bar_name, value, color=bar_colors[color_idx], left=start)
-                start += value
-                color_idx += 1
-    if not labels:
+    bar_width = .8 / len(all_bars)  # Use default width and distribute among bars in group
+    for g, (group_name, group) in enumerate(c.items()):
+        for b, (bar_name, bar) in enumerate(group.items()):
+            bar_colors = all_colormaps[group_name][bar_name].colors
+            start, color_idx = 0, 0
+            for category in all_categories:
+                for value in bar.get(category, []):
+                    ax.barh(g + bar_width * b, value, bar_width, color=bar_colors[color_idx], left=start, label=bar_name)
+                    start += value
+                    color_idx += 1
+    if group_names:
+        ax.set_yticks(range(len(c)), c.keys())  # TODO: Fix actual tick positions
+    else:
         ax.set_yticks([])
     # TODO: Reintegrate legend
 
