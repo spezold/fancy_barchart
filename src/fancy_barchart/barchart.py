@@ -85,11 +85,11 @@ def chart(c: Chart, *, color_pairs: ColorPairs = ColorPairs(), pair_idxs: Sequen
     ax.invert_yaxis()
     bar_width = .8 / len(all_bars)  # Use default width and distribute among bars in group
     for g, (group_name, group) in enumerate(c.items()):
-        for b, bar_name in enumerate(all_bars):
+        for b, bar_name in enumerate(all_bars):  # Iterate over `all_bars` to allow for missing bars in group
             if bar := group.get(bar_name):
                 colors = all_colormaps[group_name][bar_name].colors
                 start, color_i = 0, 0
-                for cat_name in all_categories:
+                for cat_name in all_categories:  # Iterate over `all_categories` to allow for missing categories in bar
                     for value in bar.get(cat_name, []):
                         ax.barh(g + bar_width * b, value, bar_width, color=colors[color_i], left=start, label=bar_name)
                         start += value
