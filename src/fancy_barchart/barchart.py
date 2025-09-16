@@ -42,11 +42,9 @@ def _colormap_by_bar_from(c: Chart, color_pairs: ColorPairs, pair_idx_by_categor
     :param style_by_bar: for each bar name in the chart, the style to be used
     :return: {group name: {bar name: colormap}}
     """
-    return {
-        group_name: {
-            bar_name: resampled({pair_idx_by_category[cat_name]: len(cat)}, color_pairs, style_by_bar[bar_name])
-        } for group_name, group in c.items() for bar_name, bar in group.items() for cat_name, cat in bar.items()
-    }
+    steps = lambda bar: {pair_idx_by_category[cat_name]: len(cat) for cat_name, cat in bar.items()}
+    resampled_bar = lambda bar_name, bar: resampled(steps(bar), color_pairs, style_by_bar[bar_name])
+    return {gn: {bn: resampled_bar(bn, bar) for bn, bar in group.items()} for gn, group in c.items()}
 
 
 # TODO: Provide code for legend patches (with grouping options)
