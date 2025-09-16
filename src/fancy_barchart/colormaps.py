@@ -14,7 +14,8 @@ except ImportError as ie:
 
 from fancy_barchart.util import alternate
 
-Color = tuple[float, float, float] # RGB
+
+Color = tuple[float, float, float]  # RGB
 
 
 class Target(NamedTuple):
