@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum, member
 from warnings import warn
 
@@ -21,7 +21,7 @@ Color = tuple[float, float, float]  # RGB
 @dataclass(frozen=True, kw_only=True)
 class Target:
     """Determine to what extent and with which (global) target color each color from the colormap is paired."""
-    color: str | NDArray[float] = "white"
+    color: str | Color = "white"
     """target value for pairing (color name or RGB tuple)"""
     opacity: float = 0.5
     """opacity of the target value: the actual target is produced as ``(1 - opacity) * src + opacity * target``)"""
@@ -56,6 +56,18 @@ class ColorPairs:
     """matplotlib colormap or its name to be used (should be a ``ListedColormap``, usually a qualitative one)"""
     unpaired: Target | None = None
     """assume successive colors as paired if None, else create a paired value for each color by the given parameters"""
+    values: NDArray[float] = field(init=False)
+    """values of all color pairs (2N×3 Numpy array of N pairs of RGB colors in adjacent rows)"""
+
+    def __post_init__(self):
+        cmap = plt.get_cmap(self.map) if isinstance(self.map, str) else self.map
+        if not isinstance(cmap, ListedColormap):
+            raise ValueError(f"Expected 'map' as ListedColormap, got {cmap.__class__.__name__} instead.")
+        colors = np.asarray(cmap.colors, copy=True)
+        if self.unpaired is not None:  # Pair colors if necessary (assume them as already paired otherwise)
+            colors = paired(colors, target=self.unpaired)
+        colors.setflags(write=False)
+        object.__setattr__(self, "values", colors)
 
 
 def unpaired_target(rgb1: Color | NDArray[float], rgb2: Color | NDArray[float], opacity: float) -> NDArray[float]:
@@ -75,7 +87,6 @@ def paired(colors: NDArray[float], target: Target) -> NDArray[float]:
     interleave source and target colors, return the corresponding 2N×3 array (assert and return values in range
     0.,…,1.).
     """
-    colors = np.asarray(colors)
     paired_colors = unpaired_target(colors, np.asarray(to_rgb(target.color)), opacity=target.opacity)
     # Interleave
     result = np.empty((2 * colors.shape[0], colors.shape[1]))
@@ -96,12 +107,7 @@ def resampled(steps: list[int] | dict[int, int], color_pairs: ColorPairs = Color
     :return: resampled colormap
     """
     interpolation_function = style.value
-    cmap = plt.get_cmap(color_pairs.map) if isinstance(color_pairs.map, str) else color_pairs.map
-    if not isinstance(cmap, ListedColormap):
-        raise ValueError(f"Expected 'cm.map' as ListedColormap, got {cmap.__class__.__name__} instead.")
-    colors = cmap.colors
-    if color_pairs.unpaired is not None:  # Pair colors if necessary (assume them as already paired otherwise)
-        colors = paired(colors, target=color_pairs.unpaired)
+    colors = color_pairs.values
     if (num_given := len(colors) // 2) < (num_needed := (max(steps) + 1 if isinstance(steps, dict) else len(steps))):
         raise ValueError(f"Need {num_needed}, but given colormap provides only {num_given} colors (or color pairs).")
     if isinstance(steps, dict):  # Extract colors at given indices if necessary
