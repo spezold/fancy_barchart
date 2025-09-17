@@ -9,17 +9,18 @@ import matplotlib.pyplot as plt
 from fancy_barchart.barchart import chart
 c = {
     "group 1": {
-        "bar 1": {"cat 1": [2, 3, 1], "cat 2": [1, 2, 1, 4, 5], "cat 3": [1, 1, 1, 1, 1, 1, 1]},
-        "bar 2": {"cat 1": [1, 1], "cat 4": [1, 2, 3, 4, 5], },
+        "bar 1": {"cat 1": [2,3,1], "cat 2": [1,2,1,4,5], "cat 3": [1,1,1,1,1,1,1]},
+        "bar 2": {"cat 1": [1,1], "cat 4": [1,2,3,4,5]},
     },
     "group 2": {
         "bar 1": {"cat 4": [10]},
-        "bar 2": {"cat 4": [4, 3, 2, 1]},
+        "bar 2": {"cat 4": [4,3,2,1]},
     },
 }
 
-chart(c)  # Render charts
-(ax := plt.gca()).set_xlim(ax.get_xlim()[0], ax.get_xlim()[1] * 1.05)  # Adjust x limits for bar 1's label
+chart(c)  # Render chart
+# Adjust x limits for bar 1's label
+(ax := plt.gca()).set_xlim(ax.get_xlim()[0], ax.get_xlim()[1] * 1.05)
 plt.show()
 ```
 The resulting plot:
