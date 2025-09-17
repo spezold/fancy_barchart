@@ -19,8 +19,7 @@ c = {
 }
 
 chart(c)  # Render chart
-# Adjust x limits for bar 1's label
-(ax := plt.gca()).set_xlim(ax.get_xlim()[0], ax.get_xlim()[1] * 1.05)
+(ax := plt.gca()).set_xlim(right=1.05 * ax.get_xlim()[1])  # Include bar 1's label
 plt.show()
 ```
 The resulting plot:
