@@ -95,7 +95,6 @@ def chart(c: Chart, *, color_pairs: ColorPairs = ColorPairs(), pair_idxs: Sequen
     pair_idx_by_category = dict(zip(all_categories, pair_idxs))
     style_by_bar = dict(zip(all_bars, styles))
     all_colormaps = _colormap_by_bar_from(c, color_pairs, pair_idx_by_category, style_by_bar)
-    # TODO: (3) create grouped legends (see https://stackoverflow.com/questions/21570007/)
     ax = plt.gca()
     ax.invert_yaxis()
     bar_w = .8 / len(all_bars)  # Use default width and distribute among bars in group
