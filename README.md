@@ -26,18 +26,21 @@ The resulting plot:
 
 ![resulting chart](resources/pics/sample_chart.svg)
 
-## Data structure
+## Data structure and core definitions
 
 Data should be provided as a nested dictionary: `{group name: {bar name: {category name: [values in category]}}}`.
 
 The dictionary's contents should conform to the following assumptions:
 
-1. Each *group* may consist of multiple *bars*.
-2. Each *bar* may consist of multiple *categories*.
-3. Each *category* may consist of multiple *values*.
-4. The values in a category and the categories in a bar are ultimately responsible for the bar's length.
-5. The same *bar name* across groups results in the same *style*.
-6. The same *category name* across bars and groups results in the same *color*.
+1. Each **group** may consist of multiple **bars**.
+2. Each **bar** may consist of multiple **categories**.
+3. Each **category** may consist of multiple **values**.
+
+These assumptions have the following effects on the resulting plot:
+
+1. The **values** in a category and the categories in a bar are ultimately responsible for the bar's **length**.
+2. The same **bar name** across groups results in the same **style**.
+3. The same **category name** across bars and groups results in the same **color**.
 
 ## Colors and styles
 
