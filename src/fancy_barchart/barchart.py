@@ -118,12 +118,3 @@ def chart(c: Chart, *, color_pairs: ColorPairs = ColorPairs(), pair_idxs: Sequen
     if legend:
         all_handles = _handles_from(styles, color_pairs, pair_idx_by_category)
         plt.legend(handles=all_handles)
-
-
-if __name__ == "__main__":
-    test = {
-        "bar1": {"cat1": [1], "cat2": [3, 1, 5]},
-        "bar2": {"cat1": [2, 1, 3], "cat3": [1, 1]}
-    }
-    cm = CM(map="Set1", unpaired=Target(color=(1, 1, 1), opacity=0.5))
-    chart(test, colors=[0, 2, 3], cm=cm)
