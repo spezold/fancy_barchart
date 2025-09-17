@@ -1,11 +1,11 @@
 from collections.abc import Mapping, Sequence
 
 import matplotlib.pyplot as plt
-from matplotlib.patches import Patch
 from matplotlib.colors import ListedColormap
 import numpy as np
 
 from fancy_barchart.colormaps import resampled, ColorPairs, Style, Target
+from fancy_barchart.legend import FancyHandle
 from fancy_barchart.util import alternate
 
 
@@ -48,7 +48,22 @@ def _colormap_by_bar_from(c: Chart, color_pairs: ColorPairs, pair_idx_by_categor
     return {gn: {bn: resampled_bar(bn, bar) for bn, bar in group.items()} for gn, group in c.items()}
 
 
-# TODO: Provide code for legend patches (with grouping options)
+def _handles_from(styles: Sequence[Style], color_pairs: ColorPairs, pair_idx_by_category: Mapping[Name, int])\
+        -> list[FancyHandle]:
+    """
+    For each category, create an appropriate legend handle.
+
+    :param styles: all styles used in the chart
+    :param color_pairs: available color pairs
+    :param pair_idx_by_category: for each category name in the chart, the color pair to be used, as an index into the
+        colormap of ``color_pairs``
+    """
+    handles = []
+    styles = styles[:2]  # Show the first two styles max.
+    for cat, pair_idx in pair_idx_by_category.items():
+        rgb_src, rgb_dst = color_pairs.values[2 * pair_idx], color_pairs.values[2 * pair_idx + 1]
+        handles.append(FancyHandle(rgb_src=tuple(rgb_src), rgb_dst=tuple(rgb_dst), styles=styles, label=cat))
+    return handles
 
 
 def chart(c: Chart, *, color_pairs: ColorPairs = ColorPairs(), pair_idxs: Sequence[int] | None = None,
@@ -99,11 +114,10 @@ def chart(c: Chart, *, color_pairs: ColorPairs = ColorPairs(), pair_idxs: Sequen
                 # Create empty container for empty or missing bars, then add label
                 cont = ax.barh(g + bar_w * b, 0, bar_w, left=0, label=bar_name) if cont is None else cont
                 ax.bar_label(cont, padding=3, labels=[bar_name])
-    if group_names:
-        ax.set_yticks(np.arange(len(c)) + (len(all_bars) - 1) / 2 * bar_w, c.keys())
-    else:
-        ax.set_yticks([])
-    # TODO: Reintegrate legend
+    ax.set_yticks(*(np.arange(len(c)) + (len(all_bars) - 1) / 2 * bar_w, c.keys()) if group_names else [])
+    if legend:
+        all_handles = _handles_from(styles, color_pairs, pair_idx_by_category)
+        plt.legend(handles=all_handles)
 
 
 if __name__ == "__main__":
