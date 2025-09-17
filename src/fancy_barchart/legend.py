@@ -26,8 +26,8 @@ class FancyHandle:
     def __post_init__(self):
         # https://stackoverflow.com/a/54119384/7395592 (20250917)
         object.__setattr__(self, "styles", tuple(self.styles))
-        if self.num is None:
-            object.__setattr__(self, "num", tuple({Style.GRADIENT: 100, Style.HATCH: 5}[s] for s in self.styles))
+        num = tuple(({Style.GRADIENT: 100, Style.HATCH: 5}[s] for s in self.styles) if self.num is None else self.num)
+        object.__setattr__(self, "num", num)
 
     def get_label(self): return self.label  # Used in ``matplotlib.pyplot.legend()``
 
