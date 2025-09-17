@@ -24,7 +24,7 @@ class FancyHandle:
     """Label for the handle in the legend (default: "")"""
 
     def __post_init__(self):
-        # https://stackoverflow.com/a/54119384/7395592 (20250917
+        # https://stackoverflow.com/a/54119384/7395592 (20250917)
         object.__setattr__(self, "styles", tuple(self.styles))
         if self.num is None:
             object.__setattr__(self, "num", tuple({Style.GRADIENT: 100, Style.HATCH: 5}[s] for s in self.styles))
