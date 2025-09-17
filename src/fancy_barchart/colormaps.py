@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, member
 from typing import NamedTuple
 from warnings import warn
 
@@ -42,9 +42,9 @@ def hatch(rgb1: Color, rgb2: Color, steps: int) -> NDArray[float]:
 
 class Style(Enum):
     """Determine style (i.e. interpolation strategy for color pairs)."""
-    GRADIENT = gradient
+    GRADIENT = member(gradient)  # https://stackoverflow.com/a/78819972/7395592 (20250917)
     """linearly interpolate between the colors of each color pair"""
-    HATCH = hatch
+    HATCH = member(hatch)
     """alternate each pair's colors"""
 
 
@@ -93,7 +93,7 @@ def resampled(steps: list[int] | dict[int, int], color_pairs: ColorPairs = Color
     :param style: style (i.e. interpolation strategy for color pairs) to be used
     :return: resampled colormap
     """
-    interpolation_function = style
+    interpolation_function = style.value
     cmap = plt.get_cmap(color_pairs.map) if isinstance(color_pairs.map, str) else color_pairs.map
     if not isinstance(cmap, ListedColormap):
         raise ValueError(f"Expected 'cm.map' as ListedColormap, got {cmap.__class__.__name__} instead.")
