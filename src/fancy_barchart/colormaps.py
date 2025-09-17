@@ -1,5 +1,5 @@
+from dataclasses import dataclass
 from enum import Enum, member
-from typing import NamedTuple
 from warnings import warn
 
 import matplotlib.pyplot as plt
@@ -18,7 +18,8 @@ from fancy_barchart.util import alternate
 Color = tuple[float, float, float]  # RGB
 
 
-class Target(NamedTuple):
+@dataclass(frozen=True, kw_only=True)
+class Target:
     """Determine to what extent and with which (global) target color each color from the colormap is paired."""
     color: str | NDArray[float] = "white"
     """target value for pairing (color name or RGB tuple)"""
@@ -48,7 +49,8 @@ class Style(Enum):
     """alternate each pair's colors"""
 
 
-class ColorPairs(NamedTuple):
+@dataclass(frozen=True, kw_only=True)
+class ColorPairs:
     """Determine available color pairs."""
     map: str | ListedColormap = "tab20"
     """matplotlib colormap or its name to be used (should be a ``ListedColormap``, usually a qualitative one)"""
