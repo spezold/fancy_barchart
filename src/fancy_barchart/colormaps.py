@@ -24,7 +24,7 @@ class Target:
     color: str | Color = "white"
     """target value for pairing (color name or RGB tuple)"""
     opacity: float = 0.5
-    """opacity of the target value: the actual target is produced as ``(1 - opacity) * src + opacity * target``)"""
+    """opacity of the target value: the actual target is produced as ``(1 - opacity) * src + opacity * target``"""
 
 
 def gradient(rgb1: Color, rgb2: Color, steps: int) -> NDArray[float]:
