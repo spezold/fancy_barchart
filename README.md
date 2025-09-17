@@ -28,7 +28,10 @@ The resulting plot:
 
 ## Data structure and core definitions
 
-Data should be provided as a nested dictionary: `{group name: {bar name: {category name: [values in category]}}}`.
+Data should be provided as a nested dictionary:
+```text
+{group name: {bar name: {category name: [values in category]}}}
+```
 
 The dictionary's contents should conform to the following assumptions:
 
