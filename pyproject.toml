@@ -4,6 +4,11 @@
 [project]
 name = "fancy_barchart"
 dynamic = ["version"]
+dependencies = ["matplotlib", "numpy"]
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+lab = ["scikit-image"]
 
 [tool.setuptools.dynamic]
 version = {attr = "fancy_barchart.__version__"}
