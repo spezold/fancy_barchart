@@ -19,7 +19,7 @@ class FancyHandle:
     styles: Sequence[Style]
     """Styles to be stacked in the handle"""
     num: Sequence[int] | None = None
-    """For each style, the number of steps to use (default: 100 for ``GRADIENT``, 5 for ``HATCH``"""
+    """For each style, the number of steps to use (default: 100 for ``GRADIENT``, 5 for ``HATCH``)"""
     label: str = ""
     """Label for the handle in the legend (default: "")"""
 
