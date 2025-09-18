@@ -82,7 +82,7 @@ def chart(c: Chart, *, color_pairs: ColorPairs = ColorPairs(), pair_idxs: Sequen
     :param styles: available styles for styling bars (default: None; i.e. alternate between ``HATCH`` and ``GRADIENT``)
     :param group_names: show each group's label/name (True; default) or not (False)
     :param bar_names: show each bar's label/name (True; default) or not (False)
-    :param legend: show a legend of the colors and styles (True; default) or not (False)
+    :param legend: show a legend of the categories' colors and styles (True; default) or not (False)
     """
     all_bars = _all_bars_from(c)
     all_categories = _all_categories_from(c)
