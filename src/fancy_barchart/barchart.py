@@ -113,7 +113,7 @@ def chart(c: Chart, *, color_pairs: ColorPairs = ColorPairs(), pair_idxs: Sequen
                 # Create empty container for empty or missing bars, then add label
                 cont = ax.barh(g + bar_w * b, 0, bar_w, left=0, label=bar_name) if cont is None else cont
                 ax.bar_label(cont, padding=3, labels=[bar_name])
-    ax.set_yticks(*(np.arange(len(c)) + (len(all_bars) - 1) / 2 * bar_w, c.keys()) if group_names else [])
+    ax.set_yticks(*(np.arange(len(c)) + (len(all_bars) - 1) / 2 * bar_w, c.keys()) if group_names else [[]])
     if legend:
         all_handles = _handles_from(styles, color_pairs, pair_idx_by_category)
         plt.legend(handles=all_handles)
