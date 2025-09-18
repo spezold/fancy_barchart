@@ -7,6 +7,7 @@ Produce grouped, stacked horizontal barcharts.
 ```python
 import matplotlib.pyplot as plt
 from fancy_barchart.barchart import chart
+
 c = {
     "group 1": {
         "bar 1": {"cat 1": [2,3,1], "cat 2": [1,2,1,4,5], "cat 3": [1,1,1,1,1,1,1]},
