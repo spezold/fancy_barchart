@@ -47,15 +47,15 @@ These assumptions have the following effects on the resulting plot:
 
 ## Colors and styles
 
-Starting with a pair of colors for each category (as defined by a `colormaps.ColorPairs` instance), different
+Starting with a **color pair** for each category (as defined by a `colormaps.ColorPairs` instance), different
 shades are applied to distinguish the values within each category.
 
 The style of a bar is defined by the `colormaps.Style` enum: 
 
-* categories are either *hatched* (`Style.HATCH`) as in "bar 1" above, meaning the two colors of each pair are
+* categories are either **hatched** (`Style.HATCH`) as in "bar 1" above, meaning the two colors of each pair are
   alternated for successive values within the corresponding category; or
-* a *gradient* is applied (`Style.GRADIENT`) as in "bar 2" above, meaning a smooth transition between the two colors of
-  each pair is produced, spanning all values withing the corresponding category.
+* a **gradient** is applied (`Style.GRADIENT`) as in "bar 2" above, meaning a smooth transition between the two colors
+  of each pair is produced, spanning all values withing the corresponding category.
 
 By default, `matplotlib`'s ["tab20"](https://matplotlib.org/stable/users/explain/colors/colormaps.html#qualitative)
 colormap is used, which already provides suitable color pairs. However, custom color pairs can also be created from
