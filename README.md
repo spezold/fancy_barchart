@@ -49,7 +49,7 @@ These assumptions have the following effects on the resulting plot:
 ## Colors and styles
 
 Starting with a **color pair** for each category (as defined by a `colormaps.ColorPairs` instance), different
-shades are applied to distinguish the values within each category.
+styles are applied to distinguish the values within each category.
 
 The style of a bar is defined by the `colormaps.Style` enum: 
 
