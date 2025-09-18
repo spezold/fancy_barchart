@@ -41,27 +41,27 @@ The dictionary's contents should conform to the following assumptions:
 
 These assumptions have the following effects on the resulting plot:
 
-1. The **values** in a category and the categories in a bar are ultimately responsible for the bar's **length**.
-2. The same **bar name** across groups results in the same **style**.
-3. The same **category name** across bars and groups results in the same **color**.
+1. The **values** in a category and the categories in a bar ultimately determine the bar's **length**.
+2. Using the same **bar name** across groups results in the same **style**.
+3. Using the same **category name** across bars and groups results in the same **color**.
 
 ## Colors and styles
 
-Starting out from a pair of colors for each category (as defined via a `colormaps.ColorPairs` instance), different
-shades are applied to enable distinguishing the values within each category.
+Starting with a pair of colors for each category (as defined by a `colormaps.ColorPairs` instance), different
+shades are applied to distinguish the values within each category.
 
-Depending on the corresponding style of the bar (as defined via the `colormaps.Style` enum), 
+The style of a bar is defined by the `colormaps.Style` enum: 
 
-* categories are either *hatched* (`Style.HATCH`) as in "bar 1" above, meaning the two values of each color pair are
+* categories are either *hatched* (`Style.HATCH`) as in "bar 1" above, meaning the two colors of each pair are
   alternated for successive values within the corresponding category; or
-* a *gradient* is applied (`Style.GRADIENT`) as in "bar 2" above, meaning a smooth transition between the two values of
-  each color pair is produced, spanning all values withing the corresponding category.
+* a *gradient* is applied (`Style.GRADIENT`) as in "bar 2" above, meaning a smooth transition between the two colors of
+  each pair is produced, spanning all values withing the corresponding category.
 
 By default, `matplotlib`'s ["tab20"](https://matplotlib.org/stable/users/explain/colors/colormaps.html#qualitative)
-colormap is used, which already provides suitable color pairs. However, custom color pairs can likewise be created from
-arbitrary `matplotlib.ListedColormap` instances; namely, by defining a `colormaps.Target`, which consists of a
-suitable target color (e.g. black or white) and an opacity, i.e. a weight for mixing the target color into each color of
-the colormap to produce each pair's secondary color.
+colormap is used, which already provides suitable color pairs. However, custom color pairs can also be created from
+arbitrary `matplotlib.ListedColormap` instances with unpaired colors by defining a `colormaps.Target`. A `Target`
+consists of a suitable target color (e.g. black or white) and an opacity, which is a weight that determines how much of
+the target color is mixed into each color of the colormap to produce the pair's secondary color.
 
 ## Built with
 
