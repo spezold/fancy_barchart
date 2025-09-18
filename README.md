@@ -68,5 +68,5 @@ the target color is mixed into each color of the colormap to produce the pair's 
 ## Built with
 
 * [`matplotlib`](https://matplotlib.org/) – plotting backend
-* [`scikit-image`](https://scikit-image.org/) – used for perceptual color interpolation (optional)
 * [`numpy`](https://numpy.org/) – various calculations
+* [`scikit-image`](https://scikit-image.org/) – used for perceptual color interpolation (optional)
